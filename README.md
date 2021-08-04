@@ -44,3 +44,18 @@ make ext-installcheck
 ```
 
 This target will run the regression tests using PostgreSQL regression testing framework.
+
+## Compile with YugabyteDB
+
+```sh
+mkdir -p /tmp/yugabytedb-compile
+cd /tmp/yugabytedb-compile
+make ybdb-build-infrastructure
+mkdir -p .tmp/extensions/example
+cd .tmp/extensions/example
+git clone https://github.com/radekg/yugabytedb-example-extension.git .
+cd -
+make ybdb-build-first-pass
+make ybdb-distribution
+make ybdb-build-docker
+```
