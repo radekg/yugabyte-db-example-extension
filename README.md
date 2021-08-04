@@ -1,10 +1,12 @@
-# YugabyteDB PostgreSQL extensions build infrastructure MVP
+# YugabyteDB example PostgreSQL extension
 
-This is a minimal setup for [YugabyteDB](https://yugabyte.com) PostgreSQL extensions building. This repository is distilled from the YugabyteDB documentation, mainly:
+This is a minimal example of a PostgreSQL extension for [YugabyteDB](https://yugabyte.com). YugabyteDB uses standard PostgreSQL extensions so this extension also works with PostgreSQL.
 
-- [Extensions requiring installation](https://docs.yugabyte.com/latest/api/ysql/extensions/#extensions-requiring-installation)
+YugabyteDB extensions documentation: [extensions requiring installation](https://docs.yugabyte.com/latest/api/ysql/extensions/#extensions-requiring-installation)
 
-Comes with a very basic extension which disallows a regular user (no superuser) from:
+This example extension is mostly useless and is used [to support the infrastructure from this repository](https://github.com/radekg/yugabytedb-postgres-extensions-build-infrastructure).
+
+All this extension does, is to disallow a regular user (no superuser) from:
 
 - creating a table in the _pg\_public_ tablespace
 - set _default\_tablespace_ and _temp\_tablespaces_; thus change them
@@ -12,6 +14,10 @@ Comes with a very basic extension which disallows a regular user (no superuser) 
 Work originally inspired by the article from _supabase_:
 
 - [Protecting reserved roles with PostgreSQL Hooks](https://supabase.io/blog/2021/07/01/roles-postgres-hooks)
+
+## PostgreSQL 11.2
+
+YugabyteDB uses PostgreSQL 11.2 internally so this extension tooling uses exactly that version.
 
 ## Create the build infrastructure Docker image
 
