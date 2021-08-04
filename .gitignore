@@ -1,0 +1,9 @@
+.vscode/
+*.so
+**/*.bc
+**/*.o
+results/
+regression.diffs
+regression.out
+.docker/yugabytedb-with-extensions/extensions
+.deps/
