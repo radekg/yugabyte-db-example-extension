@@ -8,7 +8,7 @@ This example extension is mostly useless and is used [to support the infrastruct
 
 All this extension does, is to disallow a regular user (no superuser) from:
 
-- creating a table in the _pg\_public_ tablespace
+- creating a table in the _pg\_default_ tablespace
 - set _default\_tablespace_ and _temp\_tablespaces_; thus change them
 
 Work originally inspired by the article from _supabase_:
