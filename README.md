@@ -107,3 +107,5 @@ yugabyte=# \dx
 yugabyte=# \q
 exit
 ```
+
+**Note**: the loaded extension will not be invoked. The reason is documented in [this pull request](https://github.com/yugabyte/yugabyte-db/pull/9576).
