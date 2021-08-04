@@ -65,3 +65,45 @@ make ybdb-build-first-pass
 make ybdb-distribution
 make ybdb-build-docker
 ```
+
+Run a container from the resulting Docker image, by default, the command will be:
+
+```sh
+docker run --rm -ti \
+    -p 7000:7000 \
+    -p 5433:5433 \
+    local/yugabytedb:2.7.2.0 yugabyted start --daemon=false --ui=false
+```
+
+In another terminal:
+
+```sh
+docker exec -ti $(docker ps | grep 'local/yugabytedb' | awk '{print $1}') /bin/bash
+```
+
+Validate:
+
+```
+bash-4.2$ ysqlsh
+ysqlsh (11.2-YB-2.7.2.0-b0)
+Type "help" for help.
+yugabyte=# \dx
+                                     List of installed extensions
+        Name        | Version |   Schema   |                        Description
+--------------------+---------+------------+-----------------------------------------------------------
+ pg_stat_statements | 1.6     | pg_catalog | track execution statistics of all SQL statements executed
+ plpgsql            | 1.0     | pg_catalog | PL/pgSQL procedural language
+(2 rows)
+yugabyte=# create extension example;
+CREATE EXTENSION
+yugabyte=# \dx
+                                     List of installed extensions
+        Name        | Version |   Schema   |                        Description
+--------------------+---------+------------+-----------------------------------------------------------
+ example            | 0.1.0   | public     | Example library
+ pg_stat_statements | 1.6     | pg_catalog | track execution statistics of all SQL statements executed
+ plpgsql            | 1.0     | pg_catalog | PL/pgSQL procedural language
+(3 rows)
+yugabyte=# \q
+exit
+```
