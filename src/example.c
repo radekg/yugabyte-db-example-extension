@@ -4,6 +4,8 @@
 #include "nodes/parsenodes.h"
 #include "tcop/utility.h"
 
+#include "include/str_utils.h"
+
 #define PG13_GTE (PG_VERSION_NUM >= 130000)
 
 // Hook function:
@@ -48,31 +50,52 @@ example_hook(PlannedStmt *pstmt,
             case T_CreateStmt:
                 {
                     CreateStmt *stmt = (CreateStmt *)utility_stmt;
+
+#ifdef YUGABYTEDB
+                    // Here's a YugabyteDB specific setting handling example.
+                    // We cannot test this one in regular Postgres, hence we
+                    // compile it only when the extension is compiled tigether
+                    // with YugabyteDB.
+                    // Defined in:
+                    // https://github.com/yugabyte/yugabyte-db/blob/v2.11.2/src/postgres/src/include/nodes/parsenodes.h#L2037
+                    if (stmt->split_options != NULL) {
+                        // https://github.com/yugabyte/yugabyte-db/blob/v2.11.2/src/postgres/src/include/nodes/parsenodes.h#L2171-L2175
+                        if (stmt->split_options->split_type == NUM_TABLETS) {
+                            ereport(LOG, (errmsg("create statement with SPLIT INTO n TABLETS")));
+                        } else if (stmt->split_options->split_type == SPLIT_POINTS) {
+                            ereport(LOG, (errmsg("create statement with SPLIT AT VALUES (...)")));
+                        }
+                    }
+#endif
+
                     if (stmt->tablespacename != NULL) {
-                        if (strcmp(stmt->tablespacename, "pg_default") == 0) {
+                        if (strcmp(str_to_lower(stmt->tablespacename), "pg_default") == 0) {
                             EREPORT_DISALLOWED("CREATE TABLE ... TABLESPACE pg_default");
                         }
                     }
                 }
+                break;
 
             case T_VariableSetStmt:
                 {
                     VariableSetStmt *stmt = (VariableSetStmt *)utility_stmt;
-                    if (strcmp(stmt->name, "default_tablespace") == 0) {
+                    char *var = str_to_lower(stmt->name);
+                    if (strcmp(var, "default_tablespace") == 0) {
                         EREPORT_DISALLOWED("SET ... default_tablespace");
                         break;
                     }
-                    if (strcmp(stmt->name, "temp_tablespaces") == 0) {
+                    if (strcmp(var, "temp_tablespaces") == 0) {
                         EREPORT_DISALLOWED("SET ... temp_tablespaces");
                         break;
                     }
                 }
+                break;
 
 			// Other operations would have to be restricted
 			// for the complete workload isolation.
 
             default:
-                // ereport(LOG, (errmsg("statement type: %d", utility_stmt->type)));
+                ereport(LOG, (errmsg("statement type: %d", utility_stmt->type)));
                 break;
         }
     }

@@ -13,9 +13,7 @@ ENV PGDATA=/pgdata \
 
 RUN apt-get update -y \
     && echo 'Install Postgres development environment and other dependencies' \
-        && apt-get install -y build-essential \
-            libpq5=11.12-1.pgdg90+1 \
-            libpq-dev=11.12-1.pgdg90+1 \
+        && apt-get install -y build-essential gdb \
             postgresql-server-dev-11 \
             python3 python3-pip \
     && echo 'Prepare tablespaces support' \
